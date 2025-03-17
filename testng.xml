@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Example Test Suite">
-    <test name="Browser Tests">
-        <classes>
-            <class name="com.example.GoogleTimeConversionTest" />
-        </classes>
-    </test>
-
-    <test name="Unit Tests">
-        <classes>
-            <class name="com.example.ExampleTest" />
-        </classes>
-    </test>
-
+<suite name="Test Automation Suite">
     <test name="TAU Navigation Test">
         <classes>
-            <class name="com.example.GoogleTimeConversionTest">
+            <class name="com.example.TAUNavigationTest">
                 <methods>
                     <include name="testTAUNavigation" />
                 </methods>

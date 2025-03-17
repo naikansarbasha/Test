@@ -15,9 +15,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
-import java.util.List;
 
-public class GoogleTimeConversionTest {
+public class TAUNavigationTest {
     private WebDriver driver;
     private WebDriverWait wait;
     private String screenshotDir;
@@ -107,113 +106,6 @@ public class GoogleTimeConversionTest {
         } catch (Exception e) {
             System.err.println("Error while waiting for page load: " + e.getMessage());
         }
-    }
-
-    @Test
-    public void testTimeConversion() {
-        try {
-            // Navigate to Google
-            driver.get("https://www.google.com");
-            waitForPageLoad();
-            takeScreenshot("1_google_homepage");
-
-            // Find and interact with the search box
-            WebElement searchBox = wait.until(ExpectedConditions.elementToBeClickable(By.name("q")));
-            searchBox.clear();
-            takeScreenshot("2_search_box_clear");
-
-            searchBox.sendKeys("convert 3pm ist to est");
-            takeScreenshot("3_search_text_entered");
-
-            searchBox.submit();
-            waitForPageLoad();
-            takeScreenshot("4_search_submitted");
-
-            // Wait for and find time conversion results using multiple strategies
-            WebElement timeResult = findTimeConversionResult();
-
-            // Verify and print the result
-            if (timeResult != null) {
-                scrollAndHighlight(timeResult);
-                takeScreenshot("6_time_result_highlighted");
-
-                String conversionResult = timeResult.getText();
-                System.out.println("Time Conversion Result: " + conversionResult);
-                Assert.assertFalse(conversionResult.isEmpty(), "Time conversion result should not be empty");
-            } else {
-                takeScreenshot("error_no_result_found");
-                Assert.fail("Could not find time conversion result on the page");
-            }
-
-            // Take a final screenshot
-            takeScreenshot("7_final_result");
-
-        } catch (Exception e) {
-            testFailed = true;
-            takeScreenshot("error_" + e.getClass().getSimpleName());
-            System.err.println("Test failed with exception: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    private WebElement findTimeConversionResult() {
-        // Array of possible selectors to try
-        String[][] selectors = {
-                { "div[data-tts='answers']", "css" },
-                { ".card-section", "css" },
-                { "div.gsrt", "css" },
-                { "div.vk_bk", "css" },
-                { "//*[contains(text(),'EST') or contains(text(),'Eastern Time')]", "xpath" },
-                { "//div[contains(@class, 'card-section')]//div[contains(text(),'EST')]", "xpath" },
-                { "//div[contains(@class, 'UQt4rd')]", "xpath" }
-        };
-
-        // Try each selector
-        for (String[] selector : selectors) {
-            try {
-                System.out.println("Trying selector: " + selector[0]);
-                WebElement element = null;
-
-                if (selector[1].equals("css")) {
-                    element = wait.until(ExpectedConditions.presenceOfElementLocated(
-                            By.cssSelector(selector[0])));
-                } else {
-                    element = wait.until(ExpectedConditions.presenceOfElementLocated(
-                            By.xpath(selector[0])));
-                }
-
-                if (element != null && element.isDisplayed()) {
-                    System.out.println("Found result with selector: " + selector[0]);
-                    takeScreenshot("5_result_found_" + selector[1]);
-                    return element;
-                }
-            } catch (Exception e) {
-                System.out.println("Selector failed: " + selector[0] + " - " + e.getMessage());
-            }
-        }
-
-        // If still not found, try to get all visible text elements
-        try {
-            System.out.println("Trying to find by scanning all visible text elements...");
-            List<WebElement> allElements = driver.findElements(By.cssSelector("*"));
-            for (WebElement element : allElements) {
-                try {
-                    if (element.isDisplayed()) {
-                        String text = element.getText();
-                        if (text.contains("EST") || text.contains("Eastern Time")) {
-                            System.out.println("Found result by text content: " + text);
-                            takeScreenshot("5_result_found_by_text");
-                            return element;
-                        }
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error while scanning elements: " + e.getMessage());
-        }
-
-        return null;
     }
 
     @Test
