@@ -35,15 +35,40 @@ public class TAUNavigationTest {
     public void setUp() {
         testFailed = false;
         try {
-            // Configure Chrome options
+            // Delete all previous screenshots
+            File screenshotsDir = new File("screenshots");
+            if (screenshotsDir.exists()) {
+                File[] files = screenshotsDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.getName().endsWith(".png")) {
+                            file.delete();
+                        }
+                    }
+                }
+            } else {
+                screenshotsDir.mkdirs();
+            }
+
+            // Configure Chrome options with latest features
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--start-maximized");
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--disable-notifications");
             options.addArguments("--disable-popup-blocking");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-blink-features=AutomationControlled");
 
-            // Initialize the ChromeDriver
+            // Add experimental options
+            options.setExperimentalOption("excludeSwitches", new String[] { "enable-automation" });
+            options.setExperimentalOption("useAutomationExtension", false);
+
+            // Initialize the ChromeDriver with the latest version
             driver = new ChromeDriver(options);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+            driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
             wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         } catch (Exception e) {
             System.err.println("Failed to initialize WebDriver: " + e.getMessage());
